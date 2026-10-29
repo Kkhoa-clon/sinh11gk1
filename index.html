@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ôn Tập Sinh Học 11 - Đầy Đủ 91 Câu Hỏi</title>
+    <title>Ôn Tập Sinh Học 11 - Đầy Đủ 91 Câu Hỏi (Xáo Trộn Đáp Án)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -18,7 +18,7 @@
     <!-- Header -->
     <header class="bg-emerald-600 text-white shadow-md sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-lg md:text-xl font-bold tracking-wide">🌱 Luyện Tập Sinh Học 11 (Full 91 Câu)</h1>
+            <h1 class="text-lg md:text-xl font-bold tracking-wide">🌱 Luyện Tập Sinh Học 11 (Xáo Trộn Đáp Án)</h1>
             <div id="stats" class="text-sm font-medium bg-emerald-700 px-3 py-1.5 rounded-lg flex gap-3">
                 <span>Đúng: <strong id="score-correct" class="text-green-300">0</strong></span>
                 <span>Sai: <strong id="score-wrong" class="text-red-300">0</strong></span>
@@ -226,31 +226,16 @@
             }
         }
 
-        function loadQuestion() {
-            const q = questionsData[currentIndex];
-            questionText.innerHTML = `Câu ${q.id}: ${q.question}`;
-            currentIndexEl.innerText = currentIndex + 1;
-            totalCountEl.innerText = questionsData.length;
-            jumpSelect.value = currentIndex;
-            progressBar.style.width = `${((currentIndex + 1) / questionsData.length) * 100}%`;
-
-            hintBox.classList.add('hidden');
-            hintBox.innerText = q.hint || "Không có gợi ý cho câu hỏi này.";
-            feedbackBox.classList.add('hidden');
-
-            optionsContainer.innerHTML = '';
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "option-btn w-full text-left p-3.5 border border-slate-200 rounded-xl bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 font-medium text-sm text-slate-700 flex items-start gap-3";
-                btn.innerHTML = `<span class="bg-white border text-slate-500 rounded-md w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">${String.fromCharCode(65 + idx)}</span> <span>${opt.text}</span>`;
-                btn.onclick = () => checkAnswer(idx);
-                optionsContainer.appendChild(btn);
-            });
-
-            renderMath();
+        // Fisher-Yates Shuffle Algorithm for unbiased randomization
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
         }
 
-<!-- ... existing code ... -->
         function loadQuestion() {
             const q = questionsData[currentIndex];
             questionText.innerHTML = `Câu ${q.id}: ${q.question}`;
@@ -263,8 +248,8 @@
             hintBox.innerText = q.hint || "Không có gợi ý cho câu hỏi này.";
             feedbackBox.classList.add('hidden');
 
-            // Xáo trộn thứ tự đáp án (Shuffling options)
-            const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+            // Shuffle options each time question is loaded
+            const shuffledOptions = shuffleArray(q.options);
 
             optionsContainer.innerHTML = '';
             shuffledOptions.forEach((opt, idx) => {
@@ -287,40 +272,6 @@
                     btn.classList.remove('bg-slate-50');
                     btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
                 } else if (currentShuffledOptions[idx] === selectedOpt) {
-                    btn.classList.remove('bg-slate-50');
-                    btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
-                }
-            });
-
-            feedbackBox.classList.remove('hidden');
-            if (selectedOpt.isCorrect) {
-                scoreCorrect++;
-                document.getElementById('score-correct').innerText = scoreCorrect;
-                feedbackBox.className = "mt-6 p-4 rounded-xl border bg-green-50 border-green-200 text-green-900";
-                feedbackTitle.innerText = "🎉 Chính xác!";
-            } else {
-                scoreWrong++;
-                document.getElementById('score-wrong').innerText = scoreWrong;
-                feedbackBox.className = "mt-6 p-4 rounded-xl border bg-red-50 border-red-200 text-red-900";
-                feedbackTitle.innerText = "❌ Chưa chính xác!";
-            }
-            feedbackText.innerHTML = selectedOpt.rationale;
-            renderMath();
-        }
-
-        hintBtn.onclick = () => hintBox.classList.toggle('hidden');
-<!-- ... existing code ... -->
-        function checkAnswer(selectedIdx) {
-            const q = questionsData[currentIndex];
-            const selectedOpt = q.options[selectedIdx];
-            const buttons = optionsContainer.querySelectorAll('button');
-
-            buttons.forEach((btn, idx) => {
-                btn.disabled = true;
-                if (q.options[idx].isCorrect) {
-                    btn.classList.remove('bg-slate-50');
-                    btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
-                } else if (idx === selectedIdx) {
                     btn.classList.remove('bg-slate-50');
                     btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
                 }
